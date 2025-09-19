@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export gitUrl=${gitUrl}
+export GITURL="$GITURL"
 
-git clone $gitUrl /user/app/output
+git clone "$GITURL" /user/app/output
 
 exec node index.js

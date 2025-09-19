@@ -6,7 +6,7 @@ import s3Client from "./config/s3.client.js";
 import fs from "node:fs";
 import mime from "mime-types";
 
-const projectId = "123";
+const projectId = process.env.PROJECT_ID;
 
 function init() {
   console.log("strated building");
@@ -39,17 +39,33 @@ function init() {
       const command = new PutObjectCommand({
         Bucket: "vercel-clone",
         Key: `output/${projectId}/${file}`,
-        Body: fs.ReadStream(filePath),
+        Body: fs.createReadStream(filePath),
         ContentType: mime.lookup(file),
       });
-      console.log(file);
 
       await s3Client.send(command);
-      console.log("uploaded to s3");
     }
 
-    console.log(data);
+    console.log("uploaded to s3");
   });
 }
 
 init();
+
+// import { PutObjectCommand } from "@aws-sdk/client-s3";
+// import s3Client from "./config/s3.client.js";
+// import fs from "node:fs";
+
+// async function init() {
+//   const command = new PutObjectCommand({
+//     Bucket: "verceldemo",
+//     Key: "gulistane/index.html",
+//     Body: fs.createReadStream("./index.html"), // file path
+//     ContentType: "text/html", // MIME type
+//   });
+
+//   const response = await s3Client.send(command);
+//   console.log(response);
+// }
+
+// init();
