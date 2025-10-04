@@ -2,6 +2,6 @@
 
 export GITURL="$GITURL"
 
-git clone "$GITURL" /user/app/output
+git clone "$GITURL" /usr/app/output
 
 exec node index.js

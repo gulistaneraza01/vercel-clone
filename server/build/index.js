@@ -15,7 +15,7 @@ function init() {
   const __dirname = path.dirname(__filename);
   const outDir = path.join(__dirname, "output");
 
-  const child = exec(`cd ${outDir} && npm run build`);
+  const child = exec(`cd ${outDir} && npm install && npm run build`);
 
   child.stdout.on("data", (data) => {
     console.log("started building", data);
@@ -31,16 +31,20 @@ function init() {
     const curDir = path.join(__dirname, "output", "dist");
     const folderStuct = fs.readdirSync(curDir, { recursive: true });
 
-    for (let file of folderStuct) {
-      const filePath = path.dirname(curDir, file);
+    console.log(folderStuct);
 
-      if (fs.statSync(file).isDirectory) continue;
+    for (let file of folderStuct) {
+      const filePath = path.join(curDir, file);
+
+      if (fs.statSync(filePath).isDirectory()) continue;
+      const data = `output/${projectId}/${file}`;
+      console.log({ filePath, data });
 
       const command = new PutObjectCommand({
-        Bucket: "vercel-clone",
+        Bucket: "vercel-demo-clone",
         Key: `output/${projectId}/${file}`,
         Body: fs.createReadStream(filePath),
-        ContentType: mime.lookup(file),
+        ContentType: mime.lookup(file) || "application/octet-stream",
       });
 
       await s3Client.send(command);
@@ -51,21 +55,3 @@ function init() {
 }
 
 init();
-
-// import { PutObjectCommand } from "@aws-sdk/client-s3";
-// import s3Client from "./config/s3.client.js";
-// import fs from "node:fs";
-
-// async function init() {
-//   const command = new PutObjectCommand({
-//     Bucket: "verceldemo",
-//     Key: "gulistane/index.html",
-//     Body: fs.createReadStream("./index.html"), // file path
-//     ContentType: "text/html", // MIME type
-//   });
-
-//   const response = await s3Client.send(command);
-//   console.log(response);
-// }
-
-// init();

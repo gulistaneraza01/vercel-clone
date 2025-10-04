@@ -1,5 +1,8 @@
 import express from "express";
 import httpProxy from "http-proxy";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 const proxy = httpProxy.createProxyServer();
@@ -13,7 +16,7 @@ app.use((req, res) => {
 
   console.log(projectId);
   proxy.web(req, res, {
-    target: `${BASE_URL}/${projectId}`,
+    target: `${process.env.BASE_URL}/${projectId}`,
     changeOrigin: true,
   });
 });
