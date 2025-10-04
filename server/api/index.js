@@ -69,9 +69,11 @@ app.get("/isdeploy", async (req, res) => {
     });
     const data = await s3client.send(command);
 
-    return res.json({ status: "done", data });
+    return res.json({ status: "done", success: true, data });
   } catch (error) {
-    res.status(400).json({ status: "error", err: error.message });
+    res
+      .status(400)
+      .json({ status: "error", success: false, err: error.message });
   }
 });
 
