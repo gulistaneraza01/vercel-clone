@@ -6,6 +6,10 @@ This repo contains a simple Vercel-like flow:
 - API: Express service in `server/api/` that triggers an ECS task to build a project and checks deployment status in S3.
 - S3 Proxy: Express reverse proxy in `server/s3-proxy/` that serves built static sites via subdomains like `http://{projectId}.localhost:8000`.
 
+### Frontend Preview
+
+![Frontend Preview](./docs/images/frontend.png)
+
 ### Architecture
 
 - User submits a GitHub repo URL to the API via `POST /newproject`.
