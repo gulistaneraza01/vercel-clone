@@ -4,11 +4,14 @@ import { nanoid } from "nanoid";
 import dotenv from "dotenv";
 import { GetObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
 import s3client from "./config/s3client.js";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 const port = 8001;
+
+app.use(cors({ origin: "*" }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -22,44 +25,51 @@ const ecsClient = new ECSClient({
 });
 
 app.post("/newproject", async (req, res) => {
-  const { githubURL } = req.body;
-  const projectId = nanoid(5);
+  try {
+    const { githubURL } = req.body;
+    const projectId = nanoid(5);
 
-  //ecs setup
-  // const command = new RunTaskCommand({
-  //   cluster: "",
-  //   taskDefinition: "",
-  //   launchType: "FARGATE",
-  //   count: 1,
-  //   networkConfiguration: {
-  //     awsvpcConfiguration: {
-  //       assignPublicIp: "ENABLED",
-  //       subnets: ["", "", ""],
-  //       securityGroups: [""],
-  //     },
-  //   },
-  //   overrides: {
-  //     containerOverrides: [
-  //       {
-  //         name: "",
-  //         environment: [
-  //           { name: "GIT_REPOSITORY__URL", value: githubURL },
-  //           { name: "PROJECT_ID", value: projectId },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  // });
+    //ecs setup
+    // const command = new RunTaskCommand({
+    //   cluster: "",
+    //   taskDefinition: "",
+    //   launchType: "FARGATE",
+    //   count: 1,
+    //   networkConfiguration: {
+    //     awsvpcConfiguration: {
+    //       assignPublicIp: "ENABLED",
+    //       subnets: ["", "", ""],
+    //       securityGroups: [""],
+    //     },
+    //   },
+    //   overrides: {
+    //     containerOverrides: [
+    //       {
+    //         name: "",
+    //         environment: [
+    //           { name: "GIT_REPOSITORY__URL", value: githubURL },
+    //           { name: "PROJECT_ID", value: projectId },
+    //         ],
+    //       },
+    //     ],
+    //   },
+    // });
 
-  // await ecsClient.send(command);
+    // await ecsClient.send(command);
 
-  res.json({
-    status: "queue",
-    data: { projectId, url: `http://${projectId}.localhost:8000/` },
-  });
+    res.json({
+      status: "queue",
+      data: { projectId, url: `http://${projectId}.localhost:8000/` },
+    });
+  } catch (error) {
+    res.json({
+      status: "false",
+      errorMsg: error.message,
+    });
+  }
 });
 
-app.get("/isdeploy", async (req, res) => {
+app.post("/isdeploy", async (req, res) => {
   try {
     const { projectId } = req.body;
 

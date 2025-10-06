@@ -1,6 +1,7 @@
 import express from "express";
 import httpProxy from "http-proxy";
 import dotenv from "dotenv";
+import cors from "cors";
 
 dotenv.config();
 
@@ -8,6 +9,7 @@ const app = express();
 const proxy = httpProxy.createProxyServer();
 
 const port = 8000;
+app.use(cors({ origin: "*" }));
 
 const BASE_URL = `http://localhost:4566/verceldemo`;
 
