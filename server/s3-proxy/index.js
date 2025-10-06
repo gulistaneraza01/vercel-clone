@@ -11,8 +11,6 @@ const proxy = httpProxy.createProxyServer();
 const port = 8000;
 app.use(cors({ origin: "*" }));
 
-const BASE_URL = `http://localhost:4566/verceldemo`;
-
 app.use((req, res) => {
   const projectId = req.hostname.split(".")[0];
 

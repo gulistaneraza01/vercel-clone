@@ -26,36 +26,50 @@ const ecsClient = new ECSClient({
 
 app.post("/newproject", async (req, res) => {
   try {
+    console.log("called");
     const { githubURL } = req.body;
-    const projectId = nanoid(5);
+    const projectId = nanoid(5).toLowerCase();
 
-    //ecs setup
-    // const command = new RunTaskCommand({
-    //   cluster: "",
-    //   taskDefinition: "",
-    //   launchType: "FARGATE",
-    //   count: 1,
-    //   networkConfiguration: {
-    //     awsvpcConfiguration: {
-    //       assignPublicIp: "ENABLED",
-    //       subnets: ["", "", ""],
-    //       securityGroups: [""],
-    //     },
-    //   },
-    //   overrides: {
-    //     containerOverrides: [
-    //       {
-    //         name: "",
-    //         environment: [
-    //           { name: "GIT_REPOSITORY__URL", value: githubURL },
-    //           { name: "PROJECT_ID", value: projectId },
-    //         ],
-    //       },
-    //     ],
-    //   },
-    // });
+    const command = new RunTaskCommand({
+      cluster: process.env.ECS_CLUSTER,
+      taskDefinition: process.env.ECS_TASKDEFINITION,
+      launchType: "FARGATE",
+      count: 1,
+      networkConfiguration: {
+        awsvpcConfiguration: {
+          assignPublicIp: "ENABLED",
+          subnets: [
+            process.env.ECS_SUBNET_1,
+            process.env.ECS_SUBNET_2,
+            process.env.ECS_SUBNET_3,
+          ],
+          securityGroups: [process.env.ECS_SECURITYGRP],
+        },
+      },
+      overrides: {
+        containerOverrides: [
+          {
+            name: "builder-image",
+            environment: [
+              { name: "GITURL", value: githubURL },
+              { name: "PROJECT_ID", value: projectId },
+              {
+                name: "AWS_ACCESS_KEY_ID",
+                value: process.env.AWS_ACCESS_KEY_ID,
+              },
+              {
+                name: "AWS_SECRET_ACCESS_KEY",
+                value: process.env.AWS_SECRET_ACCESS_KEY,
+              },
+              { name: "AWS_REGION", value: process.env.AWS_REGION },
+            ],
+          },
+        ],
+      },
+    });
 
-    // await ecsClient.send(command);
+    await ecsClient.send(command);
+    console.log("last");
 
     res.json({
       status: "queue",

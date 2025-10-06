@@ -1,4 +1,3 @@
-import React from "react";
 import Model from "./components/Model";
 import { ToastContainer } from "react-toastify";
 
